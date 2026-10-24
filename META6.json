@@ -7,7 +7,7 @@
     ],
     "auth": "zef:antononcube",
     "depends": [
-        "Data::Transformations",
+        "Data::Transformers",
         "Statistics::Distributions::Utilities",
         "Math::Splines",
         "Math::Polynomial::Chebyshev",
