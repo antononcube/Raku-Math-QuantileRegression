@@ -18,7 +18,12 @@ sub interquartile-range(@data -->Numeric:D) {
 }
 
 sub identity-matrix(UInt:D $n --> Math::SparseMatrix:D) {
-    Math::SparseMatrix.new(diag => 1 xx $n);
+    return Math::SparseMatrix.new(diag => 1 xx $n)
+}
+
+sub standardize(@data, Numeric:D $center, Numeric:D $scale --> Array:D) {
+    my @res = (@data <<->> $center) <</>> $scale;
+    return @res
 }
 
 #==========================================================
@@ -29,26 +34,24 @@ proto sub quantile-regression-fit($data, |) is export {*}
 
 multi sub quantile-regression-fit(
         $data,
-        $basis,
+        @basis,
         $probabilities = [0.25, 0.5, 0.75],
         :$method = Whatever
         ) {
-    return quantile-regression-fit($data, :$basis, :$probabilities, :$method)
+    return quantile-regression-fit($data, :@basis, :$probabilities, :$method)
 }
 
 multi sub quantile-regression-fit(
         $data,
-        :$basis!,
+        :@basis!,
         :probs(:$probabilities) = [0.25, 0.5, 0.75],
         :$method = Whatever
                                   ) {
-    # Scale the data appropriately
+    # Check $data is a numerical list or numerical matrix; process data into a matrix.
 
-    # Create the LP conditions matrix
+    # Check $basis has at least one element
 
-    # Find the regression quantiles
-    # 1. Solve the LP problem
-    # 2. Combine the basis functions with the LP-found weights in to one function
+    # Pass arguments to lp-quanitle-regression
 }
 
 #==========================================================
@@ -61,7 +64,13 @@ sub lp-quantile-regression-fit(
         @basis where @basis.all ~~ Callable:D,
         @probs where @probs.all ~~ Numeric:D,
         *%args) {
-    # ...
+    # Scale the data appropriately
+
+    # Create the LP conditions matrix
+
+    # Find the regression quantiles
+    # 1. Solve the LP problem
+    # 2. Combine the basis functions with the LP-found weights in to one function
 }
 
 #==========================================================
