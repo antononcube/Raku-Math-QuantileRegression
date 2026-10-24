@@ -9,6 +9,11 @@ use Math::SparseMatrix;
 use Math::Splines;
 use Statistics::Distributions; # for &quantile
 
+# The implementations in this pacakge closely follow the Wolfram Language (aka Mathematica)
+# implementations of the package "QuantileRegression" -- see:
+# - https://github.com/antononcube/WL-QuantileRegression-paclet
+# - https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/QuantileRegression/
+
 #==========================================================
 # Utilities
 #==========================================================
