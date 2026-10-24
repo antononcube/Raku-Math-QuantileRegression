@@ -2,6 +2,17 @@ use v6.d;
 use Math::QuantileRegression;
 use Test;
 
+my @coin-or-environment = <COIN_OR_CBC_LIBRARY COIN_OR_LIBRARY_DIR>;
+my @missing-environment = @coin-or-environment.grep(
+        -> $name { !(%*ENV{$name}:exists && %*ENV{$name}.chars) }
+        );
+if @missing-environment.elems {
+    plan :skip-all(
+    'COIN-OR is not configured; set COIN_OR_CBC_LIBRARY and COIN_OR_LIBRARY_DIR before running this test.'
+    );
+    exit;
+}
+
 my @basis = (
     -> $x { 1 },
     -> $x { $x },
