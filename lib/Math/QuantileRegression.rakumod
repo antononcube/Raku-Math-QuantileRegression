@@ -2,7 +2,7 @@ use v6.d;
 
 unit module Math::QuantileRegression;
 
-use Data::Transformations; # for &rescale
+use Data::Transformers; # for &rescale and &standardize
 use Math::Optimization;
 use Math::Polynomial::Chebyshev;
 use Math::Splines;
@@ -21,10 +21,6 @@ sub identity-matrix(UInt:D $n --> Math::SparseMatrix:D) {
     return Math::SparseMatrix.new(diag => 1 xx $n)
 }
 
-sub standardize(@data, Numeric:D $center, Numeric:D $scale --> Array:D) {
-    my @res = (@data <<->> $center) <</>> $scale;
-    return @res
-}
 
 #==========================================================
 # Quantile Regression Fit (basis)
