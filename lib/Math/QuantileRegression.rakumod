@@ -164,9 +164,9 @@ sub lp-quantile-regression-fit(
             ?? $solution[0 ..^ $basis-count].Array
             !! (0 xx $basis-count);
 
-        -> |arguments {
+        -> +@args {
             my $value = [+] @basis.kv.map(
-                -> $index, &basis-function { @coefficients[$index] * basis-function(|arguments) }
+                -> $index, &basis-function { @coefficients[$index] * basis-function(|@args) }
             );
             $y-factor * ($value - $y-shift) + $y-median
         }
@@ -293,5 +293,5 @@ sub lp-quantile-regression(
     # The basis-fit implementation creates the residual-variable LP, performs
     # the response scaling from the reference algorithm, and returns weighted
     # basis callables.
-    lp-quantile-regression-fit(@data, @basis, @probs, |%args)
+    return lp-quantile-regression-fit(@data, @basis, @probs, |%args)
 }
