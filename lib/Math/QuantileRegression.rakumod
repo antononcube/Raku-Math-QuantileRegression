@@ -156,7 +156,7 @@ sub lp-quantile-regression-fit(
             linear-programming(@objective, @matrix, @constraints, @bounds, 'Reals', |%args)
         };
         my @coefficients = $solution ~~ Positional:D && $solution.elems > $basis-count
-            ?? $solution[^$basis-count].Array
+            ?? $solution[0 ..^ $basis-count].Array
             !! (0 xx $basis-count);
 
         -> |arguments {
@@ -275,7 +275,7 @@ sub lp-quantile-regression(
     my $knot-min = @clamped-knots.head;
     my $knot-max = @clamped-knots.tail;
     my @unit-knots = @clamped-knots.map({ ($_ - $knot-min) / ($knot-max - $knot-min) }).Array;
-    my @basis = (^$basis-max-index).map(-> $index {
+    my @basis = (0 .. $basis-max-index).map(-> $index {
         -> $x {
             my $unit-x = ($x - $knot-min) / ($knot-max - $knot-min);
             b-spline-basis($order, $index, $unit-x, knots => @unit-knots)
