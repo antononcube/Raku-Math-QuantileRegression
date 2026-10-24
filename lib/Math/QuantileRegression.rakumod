@@ -50,7 +50,7 @@ multi sub quantile-regression-fit(
         :$method = Whatever
                                   ) {
     die 'The data must be a non-empty positional collection of numeric rows.'
-        unless $data ~~ Positional:D && $data.elems;
+    unless $data ~~ Positional:D && $data.elems;
 
     # A response vector is interpreted as observations at successive integer
     # predictor values, matching the package's matrix representation.
@@ -58,17 +58,19 @@ multi sub quantile-regression-fit(
     if $data[0] ~~ Numeric:D {
         for $data.list.kv -> $index, $response {
             die 'The data must be a non-empty positional collection of numeric rows.'
-                unless $response ~~ Numeric:D;
+            unless $response ~~ Numeric:D;
+
             @prepared-data.push([$index, $response]);
         }
     }
     else {
         for $data.list -> $row {
             die 'The data must be a non-empty positional collection of numeric rows.'
-                unless $row ~~ Positional:D && $row.elems >= 2;
+            unless $row ~~ Positional:D && $row.elems >= 2;
+
             for $row.list -> $value {
                 die 'The data must be a non-empty positional collection of numeric rows.'
-                    unless $value ~~ Numeric:D;
+                unless $value ~~ Numeric:D;
             }
             @prepared-data.push($row.Array);
         }
@@ -77,7 +79,7 @@ multi sub quantile-regression-fit(
     die 'At least one probability must be supplied.' unless $probabilities.elems;
     for $probabilities.list -> $probability {
         die 'Probabilities must be between zero and one.'
-            unless $probability ~~ Numeric:D && $probability >= 0 && $probability <= 1;
+        unless $probability ~~ Numeric:D && $probability >= 0 && $probability <= 1;
     }
 
     return $method ~~ Str:D
@@ -189,7 +191,7 @@ multi sub quantile-regression($data,
 }
 
 multi sub quantile-regression($data,
-                              :$knots!,
+                              :$knots! is copy,
                               :probs(:$probabilities) = [0.25, 0.5, 0.75],
                               UInt:D :order(:$interpolation-order) = 3,
                               :$method = Whatever
@@ -220,6 +222,7 @@ multi sub quantile-regression($data,
     die 'Spline regression requires at least two distinct predictor values.'
     unless @x.min < @x.max;
 
+    $knots = $knots.Array if $knots ~~ Seq:D;
     my @requested-knots = do given $knots {
         when Int:D {
             die 'The number of spline pieces must be positive.' unless $_ > 0;
@@ -227,7 +230,7 @@ multi sub quantile-regression($data,
         }
         when Positional:D {
             die 'The knots must be numeric.' unless $_.all ~~ Numeric:D;
-            $_.list.sort.Array
+            $_.cache.Array.sort.Array
         }
         default {
             die 'The knots must be a positive integer or a positional collection of numbers.'
