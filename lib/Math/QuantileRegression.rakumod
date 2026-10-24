@@ -189,11 +189,52 @@ multi sub quantile-regression($data,
                               UInt:D :order(:$interpolation-order) = 3,
                               :$method = Whatever
                               ) {
-    # Check $data is a numerical list or numerical matrix; process data into a matrix.
+    die 'The data must be a non-empty positional collection.'
+    unless $data ~~ Positional:D && $data.elems;
 
-    # Check $knots is an integer or a list of numbers
+    # A response vector is interpreted as observations at successive integer
+    # predictor values. Matrix data uses its first two columns, as in the
+    # spline formulation this routine implements.
+    my @prepared-data;
+    if $data[0] ~~ Numeric:D {
+        for $data.list.kv -> $index, $response {
+            die 'A response vector must contain only numeric values.' unless $response ~~ Numeric:D;
+            @prepared-data.push([$index, $response]);
+        }
+    }
+    else {
+        for $data.list -> $row {
+            die 'Each data row must contain numeric predictor and response values.'
+                unless $row ~~ Positional:D && $row.elems >= 2
+                    && $row[0] ~~ Numeric:D && $row[1] ~~ Numeric:D;
+            @prepared-data.push([$row[0], $row[1]]);
+        }
+    }
 
-    # Pass arguments to lp-quanitle-regression
+    my @x = @prepared-data.map(*[0]);
+    die 'Spline regression requires at least two distinct predictor values.'
+    unless @x.min < @x.max;
+
+    my @requested-knots = do given $knots {
+        when Int:D {
+            die 'The number of spline pieces must be positive.' unless $_ > 0;
+            (0 .. $_).map({ @x.min + (@x.max - @x.min) * $_ / $knots }).Array
+        }
+        when Positional:D {
+            die 'The knots must be numeric.' unless $_.all ~~ Numeric:D;
+            $_.list.sort.Array
+        }
+        default {
+            die 'The knots must be a positive integer or a positional collection of numbers.'
+        }
+    };
+    die 'At least two knots must be supplied.' unless @requested-knots.elems >= 2;
+
+    return $method ~~ Str:D
+        ?? lp-quantile-regression(@prepared-data, @requested-knots, $probabilities.Array,
+            $interpolation-order, :$method)
+        !! lp-quantile-regression(@prepared-data, @requested-knots, $probabilities.Array,
+            $interpolation-order);
 }
 
 #==========================================================
@@ -208,18 +249,44 @@ sub lp-quantile-regression(
         @probs where @probs.all ~~ Numeric:D,
         UInt:D $order,
         *%args) {
+    die 'The data must contain at least one row.' unless @data.elems;
+    die 'At least two knots must be supplied.' unless @knots.elems >= 2;
+    die 'Probabilities must be between zero and one.'
+    unless @probs.elems && @probs.all ~~ { $_ >= 0 && $_ <= 1 };
 
-    # Scale the data appropriately
+    my @sorted-knots = @knots.sort;
+    die 'Spline knots must span a non-zero interval.' unless @sorted-knots.head < @sorted-knots.tail;
 
-    # Process knots into list of numbers if just an integer
+    # Clamp the endpoints with additional copies, as in the reference
+    # implementation. Math::Splines expects the spline degree (not order + 1).
+    my @clamped-knots =
+        |(@sorted-knots.head xx $order),
+        |@sorted-knots,
+        |(@sorted-knots.tail xx $order);
+    
+    my $basis-max-index = @clamped-knots.elems - $order - 2;
 
-    # Enhance the knots list with additional clamped knots
+    die 'The supplied knots and interpolation order do not define a B-spline basis.'
+    if $basis-max-index < 0;
 
-    # Make the B-spline basis of functions
+    # Math::Splines handles the right endpoint for a domain ending at one.
+    # A linear change of parameter leaves the B-spline basis unchanged while
+    # making its endpoint convention work for arbitrary user knots.
+    my $knot-min = @clamped-knots.head;
+    my $knot-max = @clamped-knots.tail;
+    my @unit-knots = @clamped-knots.map({ ($_ - $knot-min) / ($knot-max - $knot-min) }).Array;
+    my @basis = (^$basis-max-index).map(-> $index {
+        -> $x {
+            my $unit-x = ($x - $knot-min) / ($knot-max - $knot-min);
+            b-spline-basis($order, $index, $unit-x, knots => @unit-knots)
+        }
+    }).Array;
 
-    # Create the LP conditions matrix
+    die 'The supplied knots and interpolation order produced no B-spline basis functions.'
+    unless @basis.elems;
 
-    # Find the regression quantiles
-    # 1. Solve the LP problem
-    # 2. Combine the basis functions with the LP-found weights in to one function
+    # The basis-fit implementation creates the residual-variable LP, performs
+    # the response scaling from the reference algorithm, and returns weighted
+    # basis callables.
+    lp-quantile-regression-fit(@data, @basis, @probs, |%args)
 }
