@@ -18,13 +18,13 @@ sub approximately-under-fraction(&fit, @data, $fraction, :tol(:$tolerance) = 0.0
     abs($count / @data.elems - $fraction) <= $tolerance;
 }
 
-my @dist-data = (0 .. 30).map(-> $index {
+my @dist-data = (^31).map(-> $index {
     my $x = -3 + 0.2 * $index;
     my $noise = (($index * 7 % 11) - 5) * 0.02;
     [$x, exp(-$x ** 2) + $noise]
 }).Array;
 
-my @dist-data2 = (0 .. 300).map(-> $index {
+my @dist-data2 = (^301).map(-> $index {
     my $x = -3 + 0.02 * $index;
     my $noise = (($index * 37 % 101) - 50) * 0.003;
     [$x, exp(-$x ** 2) + $noise]
@@ -38,14 +38,14 @@ my @probabilities = 0.2, 0.4, 0.6, 0.8;
 
 # 1
 subtest {
-    is @dist-data.grep(-> $row {
-        $row.all ~~ Numeric:D
-    }).elems, @dist-data.elems,
+    is
+            @dist-data.grep(-> $row {$row.all ~~ Numeric:D}).elems,
+            @dist-data.elems,
             'distribution data is numeric';
 
-    is @dist-data.grep(-> $row {
-        $row.elems >= 2
-    }).elems, @dist-data.elems,
+    is
+            @dist-data.grep(-> $row {$row.elems >= 2}).elems,
+            @dist-data.elems,
             'distribution data has predictor and response columns';
 
     ok @financial-data.all ~~ Numeric:D, 'financial response data is numeric';
