@@ -53,7 +53,7 @@ my @response-fits = quantile-regression(
 is @response-fits.elems, 1, 'a response vector is converted to indexed data';
 
 # 6
-is-approx @response-fits[0](2), 5,
+is-approx @response-fits.head.(2), 5,
     'response-vector spline fit uses successive integer predictors';
 
 done-testing;
