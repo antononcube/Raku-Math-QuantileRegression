@@ -17,6 +17,10 @@ sub interquartile-range(@data -->Numeric:D) {
     return @res.tail - @res.head
 }
 
+sub identity-matrix(UInt:D $n --> Math::SparseMatrix:D) {
+    Math::SparseMatrix.new(diag => 1 xx $n);
+}
+
 #==========================================================
 # Quantile Regression Fit (basis)
 #==========================================================
@@ -38,7 +42,13 @@ multi sub quantile-regression-fit(
         :probs(:$probabilities) = [0.25, 0.5, 0.75],
         :$method = Whatever
                                   ) {
-    # ...
+    # Scale the data appropriately
+
+    # Create the LP conditions matrix
+
+    # Find the regression quantiles
+    # 1. Solve the LP problem
+    # 2. Combine the basis functions with the LP-found weights in to one function
 }
 
 #==========================================================
