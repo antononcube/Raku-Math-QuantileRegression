@@ -2,4 +2,25 @@ use v6.d;
 use Math::QuantileRegression;
 use Test;
 
+my @basis = (
+    -> $x { 1 },
+    -> $x { $x },
+);
+
+my @fits = quantile-regression-fit(
+    [[0, 1], [1, 3], [2, 5]],
+    @basis,
+    [0.25, 0.5, 0.75],
+);
+is @fits.elems, 3, 'one fitted callable is returned per probability';
+is-approx @fits[1](3), 7, 'LP fit combines basis functions with solved coefficients';
+
+my @negative-fits = quantile-regression-fit(
+    [[0, -5], [1, -3], [2, -1]],
+    @basis,
+    [0.5],
+);
+is-approx @negative-fits[0](3), 1,
+    'negative responses are standardized and transformed back to the original scale';
+
 done-testing;

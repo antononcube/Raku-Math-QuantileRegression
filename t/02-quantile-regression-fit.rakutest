@@ -1,0 +1,82 @@
+use v6.d;
+use Math::QuantileRegression;
+use Test;
+
+sub approximately-under-fraction(&fit, @data, $fraction, $tolerance = 0.03 --> Bool:D) {
+    my $count = @data.grep(-> $row { $row[1] <= &fit($row[0]) }).elems;
+    abs($count / @data.elems - $fraction) <= $tolerance;
+}
+
+my @dist-data = (0 .. 30).map(-> $index {
+    my $x = -3 + 0.2 * $index;
+    my $noise = (($index * 7 % 11) - 5) * 0.02;
+    [$x, exp(-$x ** 2) + $noise]
+}).Array;
+
+my @dist-data2 = (0 .. 300).map(-> $index {
+    my $x = -3 + 0.02 * $index;
+    my $noise = (($index * 37 % 101) - 50) * 0.003;
+    [$x, exp(-$x ** 2) + $noise]
+}).Array;
+
+my @financial-data = 16.17, 14.11, 13.48, 14.07, 14.08, 13.61, 13.63,
+    12.94, 11.29, 10.10, 7.5, 7.57, 10.16, 10.39, 9.99, 10.17, 9.44,
+    10.5, 10.45, 8.25, 8.94, 8.89;
+
+my @probabilities = 0.2, 0.4, 0.6, 0.8;
+
+is @dist-data.grep(-> $row { $row.all ~~ Numeric:D }).elems, @dist-data.elems,
+    'distribution data is numeric';
+    
+is @dist-data.grep(-> $row { $row.elems >= 2 }).elems, @dist-data.elems,
+    'distribution data has predictor and response columns';
+
+ok @financial-data.all ~~ Numeric:D, 'financial response data is numeric';
+
+my @gaussian-fits = quantile-regression-fit(
+    @dist-data,
+    [-> $x { 1 }, -> $x { $x }, -> $x { exp(-$x ** 2) }],
+    @probabilities,
+);
+is @gaussian-fits.elems, @probabilities.elems, 'Gaussian basis returns one fit per probability';
+is @gaussian-fits.grep(-> &fit { &fit(12) ~~ Numeric:D }).elems, @gaussian-fits.elems,
+    'Gaussian basis fits are callable and numeric';
+
+my @polynomial-fits = quantile-regression-fit(
+    @dist-data,
+    [-> $x { 1 }, -> $x { $x }, -> $x { $x ** 2 }],
+    @probabilities,
+);
+is @polynomial-fits.elems, @probabilities.elems, 'polynomial basis returns one fit per probability';
+is @polynomial-fits.grep(-> &fit { &fit(12) ~~ Numeric:D }).elems, @polynomial-fits.elems,
+    'polynomial basis fits are callable and numeric';
+
+my @financial-fits = quantile-regression-fit(
+    @financial-data,
+    [-> $x { 1 }, -> $x { $x }, -> $x { $x ** 2 }],
+    @probabilities,
+);
+is @financial-fits.elems, @probabilities.elems, 'a response vector is accepted as data';
+is @financial-fits.grep(-> &fit { &fit(12) ~~ Numeric:D }).elems, @financial-fits.elems,
+    'response-vector fits are callable and numeric';
+
+my @responses = @dist-data.map(*[1]);
+my @response-fits = quantile-regression-fit(
+    @responses,
+    [-> $x { 1 }, -> $x { $x }, -> $x { exp(-$x ** 2) }],
+    @probabilities,
+);
+is @response-fits.elems, @probabilities.elems, 'a response vector derived from matrix data is accepted';
+is @response-fits.grep(-> &fit { &fit(12) ~~ Numeric:D }).elems, @response-fits.elems,
+    'derived response-vector fits are callable and numeric';
+
+my @cosine-fits = quantile-regression-fit(
+    @dist-data2,
+    (0 .. 16).map(-> $index { -> $x { cos($x * $index) } }).Array,
+    @probabilities,
+);
+ok (@probabilities.kv.map(-> $index, $probability {
+    approximately-under-fraction(@cosine-fits[$index], @dist-data2, $probability)
+})).all, 'fitted quantiles separate the expected fractions of observations';
+
+done-testing;
