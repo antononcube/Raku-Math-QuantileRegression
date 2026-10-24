@@ -156,7 +156,7 @@ sub lp-quantile-regression-fit(
             linear-programming(@objective, @matrix, @constraints, @bounds, 'Reals', |%args)
         };
         my @coefficients = $solution ~~ Positional:D && $solution.elems > $basis-count
-            ?? $solution[0 ..^ $basis-count].Array
+            ?? $solution[^$basis-count].Array
             !! (0 xx $basis-count);
 
         -> |arguments {
