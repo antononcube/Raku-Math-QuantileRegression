@@ -1,18 +1,18 @@
 {
     "name": "Math::QuantileRegression",
     "description": "A package for Quantile Regression calculations.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "authors": [
         "Anton Antonov"
     ],
     "auth": "zef:antononcube",
     "depends": [
-        "Data::Transformers",
-        "Statistics::Distributions::Utilities",
-        "Math::Splines",
-        "Math::Polynomial::Chebyshev",
-        "Math::Optimization",
-        "Math::SparseMatrix"
+        "Data::Transformers:ver<0.0.4>",
+        "Statistics::Distributions:ver<0.1.8>",
+        "Math::Splines:ver<0.0.2+>",
+        "Math::Polynomial::Chebyshev:ver<0.0.2>",
+        "Math::Optimization:ver<0.0.1+>",
+        "Math::SparseMatrix:ver<0.0.15>"
     ],
     "build-depends": [],
     "provides": {
