@@ -20,13 +20,14 @@
     },
     "license": "Artistic-2.0",
     "tags": [
+        "quantile-regression",
+        "quantile",
+        "regression",
         "b-splines",
+        "splines",
         "chebyshev",
         "chebyshev-polynomials",
-        "linear-programming",
-        "quantile",
-        "quantile-regression",
-        "splines"
+        "linear-programming"
     ],
     "api": "0",
     "source-url": "https://github.com/antononcube/Raku-Math-QuantileRegression.git"
