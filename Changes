@@ -3,6 +3,7 @@ Changes of the Raku package "Math::QuantileRegression".
 0.0.2 2026-10-25
     - Docs: Complete guide for using Quantile Regression with B-splines
         - A Jupyter notebook (without output/images) and a corresponding Markdown file (with output/images)
+    - Simple benchmark scripts
 
 0.0.1 2026-10-24
     - First version
