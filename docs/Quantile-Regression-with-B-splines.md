@@ -168,7 +168,7 @@ qr-plot(@rand-data, @q-funcs, [0.25, 0.75],
     div-id => 'first');
 ```
 
-![](img/first.png)
+<img src="img/first.png" height="600">
 
 Find the fraction of the data points that are under the second regression quantile:
 
@@ -222,7 +222,7 @@ qr-plot(@vec-data2, @q-funcs, [0.5,],
 # Vector(Tuple([Atom((Int)), Atom((Numeric))]), 200)
 ```
 
-![](img/scope-1.png)
+<img src="img/scope-1.png" height="600">
 
 
 The second argument—the knots specification—can be an integer specifying the number of knots or a list of numbers specifying the knots of the B-spline basis:
@@ -266,7 +266,7 @@ qr-plot(@vec-data2, @q-funcs-cheb, [0.5,],
 );
 ```
 
-![](img/scope-cheb.png)
+<img src="img/scope-cheb.png" height="600">
 
 ---
 
@@ -294,7 +294,7 @@ qr-plot(@vec-data2, @q-funcs, [0, 1, 3],
     div-id => 'order');
 ```
 
-![](img/order.png)
+<img src="img/order.png" height="600">
 
 ---
 
@@ -324,7 +324,7 @@ js-google-charts('Scatter',
     div-id => 'dist-data')
 ```
 
-![](img/dist-data.png)
+<img src="img/dist-data.png" height="600">
 
 Find quantile regression fits:
 
@@ -362,7 +362,7 @@ qr-plot(@dist-data, @q-funcs, @probs,
     div-id => 'dist-data-fits');
 ```
 
-![](img/dist-data-fits.png)
+<img src="img/dist-data-fits.png" height="600">
 
 Note that the regression quantiles clearly outline the heteroscedastic nature of the data.
 
@@ -387,7 +387,7 @@ js-google-charts('Line',
 )
 ```
 
-![](img/variances.png)
+<img src="img/variances.png" height="600">
 
 Find the lower and upper thresholds for the variance outliers:
 
@@ -448,7 +448,7 @@ js-google-charts('Scatter',
 # Vector((Any), 602)
 ```
 
-![](img/dist-data-outliers.png)
+<img src="img/dist-data-outliers.png" height="600">
 
 ### Fit and anomalies for financial time series
 
@@ -487,7 +487,7 @@ qr-plot(@fin-data, @q-funcs, [0.5, ],
     div-id => 'fin-data-fits');
 ```
 
-![](img/fin-data-fits.png)
+<img src="img/fin-data-fits.png" height="600">
 
 Here are the errors of the fit found:
 
@@ -522,7 +522,7 @@ js-google-charts('Scatter',
 )
 ```
 
-![](img/fin-data-residuals.png)
+<img src="img/fin-data-residuals.png" height="600">
 
 Find anomalies’ positions in the list of fit errors:
 
@@ -585,7 +585,7 @@ js-google-charts('Scatter',
 # Vector((Any), 96)
 ```
 
-![](img/fin-data-outliers.png)
+<img src="img/fin-data-outliers.png" height="600">
 
 ### Analyze temperature time series
 
@@ -646,7 +646,7 @@ qr-plot(@temp-data, @q-funcs, @probs,
     div-id => 'temp-data-fits');
 ```
 
-![](img/temp-data-fits.png)
+<img src="img/temp-data-fits.png" height="600">
 
 Find an estimate of the conditional Cumulative Distribution Function (CDF) at the date 2022-10-01:
 
@@ -678,7 +678,7 @@ js-google-charts('Line',
 )
 ```
 
-![](img/CDF.png)
+<img src="img/CDF.png" height="600">
 
 Find outliers in the temperature data—outliers are defined as points below or above the $0.02$ and $0.98$ regression quantiles respectively:
 
@@ -754,7 +754,7 @@ js-google-charts('Scatter',
 )
 ```
 
-![](img/temp-data-outliers.png)
+<img src="img/temp-data-outliers.png" height="600">
 
 ---
 
@@ -781,7 +781,7 @@ qr-plot(@dist-data, @q-funcs, @probs,
     div-id => 'endpoint-probs-low');
 ```
 
-![](img/endpoint-probs-low.png)
+<img src="img/endpoint-probs-low.png" height="600">
 
 Find and plot regression quantiles for probabilities $0.5$ and $1$:
 
@@ -796,7 +796,7 @@ qr-plot(@dist-data, @q-funcs, @probs,
     div-id => 'endpoint-probs-high');
 ```
 
-![](img/endpoint-probs-high.png)
+<img src="img/endpoint-probs-high.png" height="600">
 
 
 ### Overfitting
@@ -813,7 +813,7 @@ js-google-charts('Scatter', @temp-data2,
     div-id => 'partial-temperature-data');
 ```
 
-![](img/partial-temperature-data.png)
+<img src="img/partial-temperature-data.png" height="600">
 
 Make quantile-regression fits with 20 and 90 knots, respectively:
 
@@ -832,7 +832,7 @@ qr-plot(@temp-data2, [&q-func20, &q-func90], [20, 90],
     div-id => 'overfitting');
 ```
 
-![](img/overfitting.png)
+<img src="img/overfitting.png" height="600">
 
 ### Intersecting regression quantiles
 
@@ -852,7 +852,7 @@ qr-plot(@dist-data, @q-funcs, @probs,
     div-id => 'intersecting-quantiles');
 ```
 
-![](img/intersecting-quantiles.png)
+<img src="img/intersecting-quantiles.png" height="600">
 
 Here is the estimated conditional CDF at a selected predictor value:
 
@@ -869,7 +869,7 @@ js-google-charts('Line', @q-func-values,
     div-id => 'intersecting-cdf');
 ```
 
-![](img/intersecting-cdf.png)
+<img src="img/intersecting-cdf.png" height="600">
 
 ### Rescaling
 
@@ -905,7 +905,7 @@ qr-plot(@fin-data2r-pairs, @q-funcs, @probs,
 # (-0.014173863870494362 0.0030661198402064005 0.012647961513543976)
 ```
 
-![](img/rescaling.png)
+<img src="img/rescaling.png" height="600">
 
 ------
 
