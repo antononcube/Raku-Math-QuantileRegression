@@ -6,25 +6,30 @@ October 2026
 
 ## Introduction
 
-This notebook has explanations and examples of using the function `quantile-regression` provided by the Raku package ["QuantileRegression"](https://github.com/antononcube/Raku-Math-QuantileRegression), [AAp1].
+This document ([notebook](https://github.com/antononcube/Raku-Math-QuantileRegression/blob/main/docs/Quantile-Regression-with-B-splines.ipynb)) 
+has explanations and examples of using the function `quantile-regression` provided by the Raku package ["Math::QuantileRegression"](https://github.com/antononcube/Raku-Math-QuantileRegression), [AAp1].
 
 The function `quantile-regression` computes [Quantile Regression (QR)](https://en.wikipedia.org/wiki/Quantile_regression) fits over a time series, a list of numbers or a list of numeric pairs using B-spline bases.
 
-**Remark:** This notebook closely follows the page of the Wolfram Function Repository entry [`QuantileRegression`](https://resources.wolframcloud.com/FunctionRepository/resources/QuantileRegression/), [AAp2].
+**Remark:** This notebook closely follows the page of the Wolfram Function Repository entry [`QuantileRegression`](https://resources.wolframcloud.com/FunctionRepository/resources/QuantileRegression/), [AAp3].
+Similar notebook was made for the Python package ["QuantileRegression"](https://pypi.org/project/QuantileRegression/), [AAp2].
 
 ---
 
 ## `quantile-regression`
 
-`quantile-regression(data, knots, probs)`    
+`quantile-regression(@data, $knots, @probs)`    
 does quantile regression over the times series or data array data using the knots specification knots for the probabilities probs.
 
-`quantile-regression(data, knots, probs, opts)`    
+`quantile-regression(@data, $knots, @probs, *%opts)`    
 does quantile regression with the options opts.
+
+`quantile-regression(@data, :$knots, :@probs, *%opts)`    
+does quantile regression with named arguments.
 
 ### Details & Options
 
-- `quantile-regression` works on numpy arrays, lists of numbers, and lists of numeric pairs.
+- `quantile-regression` works on numerical arrays, lists of numbers, and lists of numeric pairs.
 
 
 - The curves computed with quantile regression are called **regression quantiles**.
@@ -33,10 +38,10 @@ does quantile regression with the options opts.
 - The regression quantiles corresponding to the specified probabilities are linear combinations of B-splines generated over the specified knots.
 
 
-- In other words, `quantile-regression` computes fits using a B-spline functions basis. The basis is specified with the `knots` argument and the option `order`.
+- In other words, `quantile-regression` computes fits using a B-spline functions basis. The basis is specified with the `knots` argument and the option `:order(:$interpolation-order)`.
 
 
-- The named argument `order` is 3 by default.
+- The named argument `:order(:$interpolation-order)` is 3 by default.
 
 
 ---
