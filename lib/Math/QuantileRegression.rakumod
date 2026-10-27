@@ -141,12 +141,22 @@ sub lp-quantile-regression-fit(
         die "Basis function returned a non-numeric value for row $row-index."
         unless @basis-values.all ~~ Numeric:D;
         
-        @matrix.push([
-            |@basis-values,
-            |(0 xx $observations).kv.map(-> $index, $zero { $index == $row-index ?? 1 !! 0 }),
-            |(0 xx $observations).kv.map(-> $index, $zero { $index == $row-index ?? -1 !! 0 }),
-        ]);
+        @matrix.push(@basis-values);
+        # Doing these slack variables enhancements here makes the computations unnecessarily slow.
+        # It faster to do those (see below) as column bindings between sparse matrices.
+        # @matrix.push([
+        #     |@basis-values,
+        #     |(0 xx $observations).kv.map(-> $index, $zero { $index == $row-index ?? 1 !! 0 }),
+        #     |(0 xx $observations).kv.map(-> $index, $zero { $index == $row-index ?? -1 !! 0 }),
+        # ]);
     }
+
+    # Making the constraint matrix sparse prevents certain slow &is-matrix check in "Math::Optimization".
+    # (The constraint matrix is, of course, sparse to begin with.)
+    my $smat0 = Math::SparseMatrix.new(dense-matrix => @matrix);
+    my $smat1 = Math::SparseMatrix.new(diag => 1 xx @data.elems);
+    my $smat2 = Math::SparseMatrix.new(diag => -1 xx @data.elems);
+    my $smat = $smat0.column-bind($smat1).column-bind($smat2);
 
     my @bounds = (
         |((-Inf, Inf) xx $basis-count),
@@ -160,7 +170,7 @@ sub lp-quantile-regression-fit(
             |($probability xx $observations),
             |((1 - $probability) xx $observations);
         my $solution = try {
-            linear-programming(@objective, @matrix, @constraints, @bounds, 'Reals', |%args)
+            linear-programming(@objective, $smat, @constraints, @bounds, 'Reals', |%args)
         };
         my @coefficients = $solution ~~ Positional:D && $solution.elems > $basis-count
             ?? $solution[0 ..^ $basis-count].Array
