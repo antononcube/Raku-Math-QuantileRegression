@@ -11,7 +11,7 @@
         "Statistics::Distributions:ver<0.1.8>",
         "Math::Splines:ver<0.0.2+>",
         "Math::Polynomial::Chebyshev:ver<0.0.2>",
-        "Math::Optimization:ver<0.0.1+>",
+        "Math::Optimization:ver<0.0.2+>",
         "Math::SparseMatrix:ver<0.0.15>"
     ],
     "build-depends": [],
