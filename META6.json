@@ -1,7 +1,7 @@
 {
     "name": "Math::QuantileRegression",
     "description": "A package for Quantile Regression calculations.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "authors": [
         "Anton Antonov"
     ],
