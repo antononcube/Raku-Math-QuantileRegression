@@ -1,5 +1,8 @@
 Changes of the Raku package "Math::QuantileRegression".
 
+0.0.4 2026-10-29
+    - Using updated versions of the packages "Math::Optimization" and "Math::SparseMatrix"
+
 0.0.3 2026-10-27
     - Performance update: using sparse matrices to form and pass the constraint matrix
         - ≈ 2 times speedup with both Rakudo and Rakupp
